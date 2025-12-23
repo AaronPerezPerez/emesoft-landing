@@ -67,8 +67,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // 5. Producción: enviar via Cloudflare Email Workers
     const runtime = (locals as any).runtime;
+
+    // Debug: log available bindings
+    console.log('Runtime available:', !!runtime);
+    console.log('Runtime env:', runtime?.env ? Object.keys(runtime.env) : 'no env');
+
     if (!runtime?.env?.EMAIL) {
-      console.error('EMAIL binding not available');
+      console.error('EMAIL binding not available. Available bindings:',
+        runtime?.env ? Object.keys(runtime.env) : 'none');
       throw new Error('Email service not configured');
     }
 
