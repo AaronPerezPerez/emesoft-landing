@@ -81,8 +81,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     msg.setSender({ name: 'EMESOFT Web', addr: 'contacto@perezperez.dev' });
     msg.setRecipient('administracion@emesoft.com');
     msg.setSubject(`Nuevo contacto web - ${name}`);
-    // Reply-To con formato RFC 5322
-    msg.setHeader('Reply-To', `<${email}>`);
+    // Nota: Reply-To no soportado por mimetext/Cloudflare, el email del cliente está en el cuerpo
     msg.addMessage({
       contentType: 'text/html',
       data: generateEmailHTML({ name, email, phone, company, product, message }),
