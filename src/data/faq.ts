@@ -35,7 +35,7 @@ export const faq: FAQItem[] = [
     id: 6,
     question: "¿Qué modalidades de mantenimiento existen?",
     answer:
-      "Ofrecemos cuatro modalidades: Básico, Profesional, Elite y Asesor, cada una con diferentes niveles de servicio adaptados a sus necesidades.",
+      "Ofrecemos tres modalidades: Básico, Profesional y Elite, cada una con diferentes horarios de atención y servicios adaptados a sus necesidades.",
   },
   {
     id: 7,

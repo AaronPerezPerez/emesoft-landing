@@ -39,7 +39,7 @@ export const services: Service[] = [
   {
     id: "mantenimiento",
     title: "Mantenimiento",
-    description: "Modalidades flexibles: Básico, Profesional, Elite y Asesor.",
+    description: "Modalidades flexibles: Básico, Profesional y Elite.",
     icon: "shield",
   },
 ];

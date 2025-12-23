@@ -3,39 +3,43 @@ export interface MaintenanceFeature {
   description?: string;
 }
 
+export interface MaintenanceSchedule {
+  label: string;
+  hours: string;
+}
+
 export interface MaintenancePlan {
   id: string;
   name: string;
   description: string;
   recommended?: boolean;
+  schedule: MaintenanceSchedule;
   features: {
     feature: MaintenanceFeature;
     included: boolean;
-    note?: string;
   }[];
 }
 
-// Features comunes a todas las modalidades
+// Features comunes organizados por nivel
 export const maintenanceFeatures: MaintenanceFeature[] = [
-  { name: "Consulta telefónica 24h", description: "Asesoramiento telefónico permanente" },
-  { name: "Asistencia in situ preferente", description: "Consulta y reparación en sus instalaciones sin cargo" },
-  { name: "50% dto. actualizaciones", description: "Descuento en nuevas versiones del software" },
-  { name: "Mantenimiento remoto", description: "Reparación y actualización inmediata vía internet" },
-  { name: "Visitas periódicas", description: "Seguimiento preventivo programado" },
-  { name: "Actualizaciones gratis", description: "Todas las actualizaciones incluidas sin coste adicional" },
-  { name: "Zona privada web", description: "Acceso a área exclusiva de clientes" },
-  { name: "Informes a medida", description: "Diseño de informes y etiquetas personalizados" },
-  { name: "Desarrollos especiales", description: "Funciones especiales a medida sin cargo" },
-  { name: "Formación permanente", description: "Capacitación continua del personal en aulas EMESOFT" },
-  { name: "Mantenimiento equipos", description: "Mantenimiento preventivo de todo el sistema informático" },
-  { name: "Asesoramiento general", description: "Asesoramiento informático-comercial integral" },
+  // Base - Todos los planes
+  { name: "Software de gestión", description: "Licencia completa de la aplicación contratada" },
+  { name: "Soporte telefónico", description: "Consultas y asesoramiento preferente" },
+  { name: "Asistencia remota", description: "Mantenimiento y reparación inmediata vía internet" },
+  // Profesional+
+  { name: "Actualizaciones incluidas", description: "Nuevas versiones del software sin coste" },
+  { name: "Zona privada web", description: "Acceso exclusivo a recursos y descargas" },
+  // Elite
+  { name: "Desarrollos a medida", description: "Funciones personalizadas sin cargo adicional" },
+  { name: "Formación presencial", description: "Capacitación en las aulas de EMESOFT" },
 ];
 
 export const maintenancePlans: MaintenancePlan[] = [
   {
     id: "basico",
     name: "Básico",
-    description: "Soporte esencial para mantener su sistema operativo",
+    description: "Soporte esencial para consultas puntuales",
+    schedule: { label: "5×4", hours: "L-V 09:00-13:00" },
     features: [
       { feature: maintenanceFeatures[0], included: true },
       { feature: maintenanceFeatures[1], included: true },
@@ -44,69 +48,37 @@ export const maintenancePlans: MaintenancePlan[] = [
       { feature: maintenanceFeatures[4], included: false },
       { feature: maintenanceFeatures[5], included: false },
       { feature: maintenanceFeatures[6], included: false },
-      { feature: maintenanceFeatures[7], included: false },
-      { feature: maintenanceFeatures[8], included: false },
-      { feature: maintenanceFeatures[9], included: false },
-      { feature: maintenanceFeatures[10], included: false },
-      { feature: maintenanceFeatures[11], included: false },
     ],
   },
   {
     id: "profesional",
     name: "Profesional",
-    description: "La opción más popular para empresas en crecimiento",
+    description: "Todo incluido para empresas en crecimiento",
     recommended: true,
+    schedule: { label: "5×8", hours: "L-V 09:00-17:00" },
     features: [
       { feature: maintenanceFeatures[0], included: true },
       { feature: maintenanceFeatures[1], included: true },
-      { feature: maintenanceFeatures[2], included: false, note: "Gratis" },
+      { feature: maintenanceFeatures[2], included: true },
       { feature: maintenanceFeatures[3], included: true },
       { feature: maintenanceFeatures[4], included: true },
-      { feature: maintenanceFeatures[5], included: true },
-      { feature: maintenanceFeatures[6], included: true },
-      { feature: maintenanceFeatures[7], included: false },
-      { feature: maintenanceFeatures[8], included: false },
-      { feature: maintenanceFeatures[9], included: false },
-      { feature: maintenanceFeatures[10], included: false },
-      { feature: maintenanceFeatures[11], included: false },
+      { feature: maintenanceFeatures[5], included: false },
+      { feature: maintenanceFeatures[6], included: false },
     ],
   },
   {
     id: "elite",
     name: "Elite",
     description: "Servicio premium con personalización completa",
+    schedule: { label: "5×12", hours: "L-V 08:00-20:00" },
     features: [
       { feature: maintenanceFeatures[0], included: true },
       { feature: maintenanceFeatures[1], included: true },
-      { feature: maintenanceFeatures[2], included: false, note: "Gratis" },
+      { feature: maintenanceFeatures[2], included: true },
       { feature: maintenanceFeatures[3], included: true },
       { feature: maintenanceFeatures[4], included: true },
       { feature: maintenanceFeatures[5], included: true },
       { feature: maintenanceFeatures[6], included: true },
-      { feature: maintenanceFeatures[7], included: true },
-      { feature: maintenanceFeatures[8], included: true },
-      { feature: maintenanceFeatures[9], included: true },
-      { feature: maintenanceFeatures[10], included: false },
-      { feature: maintenanceFeatures[11], included: false },
-    ],
-  },
-  {
-    id: "asesor",
-    name: "Asesor",
-    description: "Servicio integral con asesoramiento completo",
-    features: [
-      { feature: maintenanceFeatures[0], included: true },
-      { feature: maintenanceFeatures[1], included: true },
-      { feature: maintenanceFeatures[2], included: false, note: "Gratis" },
-      { feature: maintenanceFeatures[3], included: true },
-      { feature: maintenanceFeatures[4], included: true },
-      { feature: maintenanceFeatures[5], included: true },
-      { feature: maintenanceFeatures[6], included: true },
-      { feature: maintenanceFeatures[7], included: true },
-      { feature: maintenanceFeatures[8], included: true },
-      { feature: maintenanceFeatures[9], included: true },
-      { feature: maintenanceFeatures[10], included: true },
-      { feature: maintenanceFeatures[11], included: true },
     ],
   },
 ];

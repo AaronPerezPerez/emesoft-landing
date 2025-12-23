@@ -36,7 +36,11 @@ import { maintenancePlans, maintenanceFeatures } from '../data/maintenance';
               Recomendado
             </div>
           )}
-          <h3 class="font-display text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+          <h3 class="font-display text-2xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{plan.schedule.label}</span>
+            <span class="text-xs text-gray-500">{plan.schedule.hours}</span>
+          </div>
           <p class="text-gray-600 text-sm mb-6">{plan.description}</p>
 
           <ul class="space-y-3">
@@ -84,6 +88,10 @@ import { maintenancePlans, maintenanceFeatures } from '../data/maintenance';
                     </span>
                   )}
                   <div class="font-display text-xl font-bold text-gray-900">{plan.name}</div>
+                  <div class="flex items-center justify-center gap-2 mt-1">
+                    <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">{plan.schedule.label}</span>
+                    <span class="text-xs text-gray-500">{plan.schedule.hours}</span>
+                  </div>
                   <div class="text-xs text-gray-500 mt-1">{plan.description}</div>
                 </th>
               ))}
@@ -144,7 +152,7 @@ import { maintenancePlans, maintenanceFeatures } from '../data/maintenance';
 
     <!-- Note -->
     <p class="text-center text-sm text-gray-500 mt-8" data-animate>
-      Todos los planes incluyen soporte telefónico 24 horas y asistencia presencial preferente.
+      Todos los planes incluyen licencia de software, soporte telefónico y asistencia remota.
     </p>
   </div>
 </section>

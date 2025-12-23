@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  highlight: string;
+  titleAfter?: string;  // Text after the highlight (e.g., "?" in "¿Por qué elegir EMESOFT?")
+  subtitle?: string;
+  class?: string;
+}
+
+const {
+  title,
+  highlight,
+  titleAfter = '',
+  subtitle,
+  class: className = 'mb-16'
+} = Astro.props;
+---
+
+<div class={`text-center max-w-3xl mx-auto ${className}`} data-animate>
+  <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+    {title}
+    <span class="text-primary"> {highlight}</span>{titleAfter}
+  </h2>
+  {subtitle && (
+    <p class="text-lg text-gray-600">
+      {subtitle}
+    </p>
+  )}
+</div>

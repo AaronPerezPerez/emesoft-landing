@@ -1,0 +1,57 @@
+---
+interface Props {
+  variant?: 'dot' | 'solid' | 'outline';
+  color?: 'accent' | 'primary' | 'white' | 'custom';
+  size?: 'sm' | 'md';
+  class?: string;
+  dotPulse?: boolean;
+}
+
+const {
+  variant = 'solid',
+  color = 'accent',
+  size = 'md',
+  class: className = '',
+  dotPulse = true,
+} = Astro.props;
+
+const baseClasses = 'inline-flex items-center font-semibold rounded-full';
+
+const sizeClasses = {
+  sm: 'gap-1.5 px-3 py-1 text-xs',
+  md: 'gap-2 px-4 py-2 text-sm',
+};
+
+const variantClasses = {
+  dot: 'bg-white/5 backdrop-blur-sm border border-white/10 text-white/80',
+  solid: {
+    accent: 'bg-accent/10 text-accent',
+    primary: 'bg-primary/10 text-primary',
+    white: 'bg-white/10 text-white',
+    custom: '', // Use class prop for custom colors
+  },
+  outline: {
+    accent: 'border border-accent/30 text-accent bg-transparent',
+    primary: 'border border-primary/30 text-primary bg-transparent',
+    white: 'border border-white/30 text-white bg-transparent',
+    custom: '',
+  },
+};
+
+const getVariantClass = () => {
+  if (variant === 'dot') return variantClasses.dot;
+  return variantClasses[variant][color];
+};
+
+const classes = `${baseClasses} ${sizeClasses[size]} ${getVariantClass()} ${className}`;
+---
+
+<span class={classes}>
+  {variant === 'dot' && (
+    <span class:list={[
+      'w-2 h-2 rounded-full bg-accent',
+      dotPulse && 'animate-pulse'
+    ]} />
+  )}
+  <slot />
+</span>

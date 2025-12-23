@@ -1,0 +1,64 @@
+---
+import Arrow from '../icons/Arrow.astro';
+import Phone from '../icons/Phone.astro';
+
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  href?: string;
+  icon?: 'arrow' | 'phone' | 'none';
+  iconPosition?: 'left' | 'right';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  type?: 'button' | 'submit';
+}
+
+const {
+  variant = 'primary',
+  href,
+  icon = 'arrow',
+  iconPosition = 'right',
+  size = 'md',
+  class: className = '',
+  type = 'button',
+} = Astro.props;
+
+const isLink = !!href;
+
+const baseClasses = 'group inline-flex items-center font-semibold transition-all duration-300';
+
+const sizeClasses = {
+  sm: 'gap-1.5 px-4 py-2 text-sm rounded-lg',
+  md: 'gap-2 px-6 py-3 text-base rounded-xl',
+  lg: 'gap-2 px-8 py-4 text-base rounded-xl',
+};
+
+const variantClasses = {
+  primary: 'bg-accent text-white hover:bg-accent/90 hover:shadow-lg hover:shadow-accent/25',
+  secondary: 'border-2 border-white/20 text-white hover:bg-white/5 hover:border-white/40',
+  ghost: 'text-primary hover:gap-3',
+};
+
+const classes = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+
+const iconClasses = variant === 'ghost'
+  ? 'w-5 h-5 group-hover:translate-x-1 transition-transform'
+  : 'w-5 h-5 group-hover:translate-x-0.5 transition-transform';
+---
+
+{isLink ? (
+  <a href={href} class={classes}>
+    {icon === 'phone' && iconPosition === 'left' && <Phone class={iconClasses} />}
+    {icon === 'arrow' && iconPosition === 'left' && <Arrow class={iconClasses} />}
+    <span><slot /></span>
+    {icon === 'phone' && iconPosition === 'right' && <Phone class={iconClasses} />}
+    {icon === 'arrow' && iconPosition === 'right' && <Arrow class={iconClasses} />}
+  </a>
+) : (
+  <button type={type} class={classes}>
+    {icon === 'phone' && iconPosition === 'left' && <Phone class={iconClasses} />}
+    {icon === 'arrow' && iconPosition === 'left' && <Arrow class={iconClasses} />}
+    <span><slot /></span>
+    {icon === 'phone' && iconPosition === 'right' && <Phone class={iconClasses} />}
+    {icon === 'arrow' && iconPosition === 'right' && <Arrow class={iconClasses} />}
+  </button>
+)}

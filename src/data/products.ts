@@ -7,7 +7,7 @@ export const products: Product[] = [
     tagline: "Calzado, Textil y Deporte",
     description:
       "Paquete de software altamente especializado en la gestión de empresas dedicadas a calzado, textil y deporte. 33 años de evolución constante.",
-    color: "#2563EB",
+    color: "#1E3A5F",
     featured: true,
     target: ["Mayoristas", "Detallistas"],
     features: [
@@ -59,7 +59,7 @@ export const products: Product[] = [
     tagline: "Servicio, Talleres y Distribución",
     description:
       "Aplicación diseñada para empresas de servicios, talleres de mecánica, servicio técnico y distribución.",
-    color: "#3B82F6",
+    color: "#1E3A5F",
     featured: false,
     target: ["Talleres mecánicos", "Servicio técnico", "Distribuidores"],
     features: [
@@ -97,12 +97,52 @@ export const products: Product[] = [
     image: "/images/caja_emeservice.png",
   },
   {
+    id: "emefood",
+    name: "EMEFOOD",
+    tagline: "Alimentación e Industria Alimentaria",
+    description:
+      "Software para gestión comercial de empresas dedicadas a la importación, exportación, producción y comercialización de productos alimenticios.",
+    color: "#1E3A5F",
+    featured: false,
+    target: ["Importadores", "Exportadores", "Productores", "Distribuidores alimentarios"],
+    features: [
+      // Trazabilidad y lotes
+      "Gestión completa de lotes y caducidades",
+      "Trazabilidad de origen a destino",
+      "Alertas de productos próximos a caducar",
+      "Control FIFO/FEFO automático",
+      // Importación/Exportación
+      "Gestión de importación y exportación",
+      "Control de documentación aduanera",
+      "Gestión de certificaciones sanitarias (AESAN)",
+      "Documentos de acompañamiento comercial",
+      // Producción
+      "Control de materias primas",
+      "Gestión de recetas y fórmulas",
+      "Costes de producción",
+      "Mermas y desperdicios",
+      // Almacén especializado
+      "Multialmacén con zonas de temperatura",
+      "Control de stock por lote y ubicación",
+      "Entradas con control de calidad",
+      // Ventas y facturación
+      "Facturación con retenciones especiales",
+      "Gestión de precios por temporada",
+      "Tarifas por cliente y volumen",
+      // Integración
+      "Integración con báscula",
+      "Etiquetado normativo automático",
+      "Exportación a ERPs",
+    ],
+    image: "/images/caja_emefood.png",
+  },
+  {
     id: "emeclinic",
     name: "EMECLINIC",
     tagline: "Clínicas y Consultas Médicas",
     description:
       "Software desarrollado para gestionar cualquier tipo de consulta médica o clínica, independientemente de su especialidad.",
-    color: "#60A5FA",
+    color: "#1E3A5F",
     featured: false,
     target: ["Clínicas", "Consultas médicas", "Centros de salud"],
     features: [
@@ -159,13 +199,6 @@ export const products: Product[] = [
         name: "EMEFINCA",
         sector: "Gestión Inmobiliaria",
         description: "Control de documentos y gestión integral de propiedades",
-      },
-      {
-        id: "emefood",
-        name: "EMEFOOD",
-        sector: "Alimentación",
-        description:
-          "Gestión comercial para importación, exportación y producción de alimentos",
       },
       {
         id: "emebuilder",
