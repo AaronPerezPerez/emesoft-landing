@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (isDev) {
       console.log('📧 [DEV] Email que se enviaría:');
-      console.log('  To: comercial@emesoft.com');
+      console.log('  To: administracion@emesoft.com');
       console.log('  From: contacto@perezperez.dev');
       console.log('  Reply-To:', email);
       console.log('  Subject: Nuevo contacto web -', name);
@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
         body: JSON.stringify({
           personalizations: [
             {
-              to: [{ email: 'comercial@emesoft.com', name: 'EMESOFT Comercial' }],
+              to: [{ email: 'administracion@emesoft.com', name: 'EMESOFT Administración' }],
             },
           ],
           from: { email: 'contacto@perezperez.dev', name: 'EMESOFT Web' },
