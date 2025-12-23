@@ -1,0 +1,130 @@
+---
+import { products } from '../data/products';
+
+const featuredProducts = products.filter(p => p.id !== 'otros' && p.features.length > 0);
+---
+
+<section id="productos" class="py-24 lg:py-32 bg-gray-50 relative overflow-hidden">
+  <!-- Pattern diagonal sutil -->
+  <div class="absolute inset-0 emesoft-pattern opacity-[0.03]"></div>
+
+  <!-- Asymmetric decorative elements - más visibles -->
+  <div class="absolute top-1/4 right-0 w-[500px] h-[500px] emesoft-orb opacity-[0.08]"></div>
+  <div class="absolute bottom-1/4 left-0 w-[400px] h-[400px] emesoft-orb opacity-[0.06]"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 lg:mb-24" data-animate>
+      <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+        Soluciones especializadas
+        <span class="text-primary"> por sector</span>
+      </h2>
+      <p class="text-lg text-gray-600">
+        Más de 33 años perfeccionando software que entiende las necesidades específicas de su industria.
+      </p>
+    </div>
+
+    <!-- Products -->
+    <div class="space-y-16 lg:space-y-24">
+      {featuredProducts.map((product, index) => (
+        <article
+          id={product.id}
+          class="scroll-mt-24"
+          data-animate
+        >
+          <div class={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center ${index % 2 === 1 ? 'lg:grid-flow-dense' : ''}`}>
+            <!-- Image Column -->
+            <div class={`relative ${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
+              <div class="relative rounded-2xl overflow-hidden bg-gray-50 p-8 lg:p-12">
+                <!-- Decorative elements -->
+                <div
+                  class="absolute top-0 left-0 w-32 h-32 rounded-full blur-3xl opacity-20"
+                  style={`background: ${product.color}`}
+                ></div>
+                <div
+                  class="absolute bottom-0 right-0 w-40 h-40 rounded-full blur-3xl opacity-15"
+                  style={`background: ${product.color}`}
+                ></div>
+
+                <!-- Product Box Image -->
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  class="relative w-full max-w-sm mx-auto object-contain drop-shadow-2xl"
+                  loading="lazy"
+                />
+
+                <!-- Color accent -->
+                <div
+                  class="absolute bottom-0 left-0 right-0 h-1"
+                  style={`background: ${product.color}`}
+                ></div>
+              </div>
+            </div>
+
+            <!-- Content Column -->
+            <div class={index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}>
+              <!-- Badge -->
+              <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold mb-4"
+                style={`background: ${product.color}15; color: ${product.color}`}
+              >
+                <span class="w-2 h-2 rounded-full" style={`background: ${product.color}`}></span>
+                {product.tagline}
+              </div>
+
+              <h3 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                {product.name}
+              </h3>
+
+              <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                {product.description}
+              </p>
+
+              <!-- Features Grid -->
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                {product.features.slice(0, 6).map(feature => (
+                  <li class="flex items-start gap-3">
+                    <svg
+                      class="w-5 h-5 mt-0.5 flex-shrink-0"
+                      style={`color: ${product.color}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-gray-700 text-sm">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <!-- CTA -->
+              <a
+                href="#contacto"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                style={`background: ${product.color}`}
+              >
+                Solicitar demostración
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-animate] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  [data-animate].animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+import { maintenancePlans, maintenanceFeatures } from '../data/maintenance';
+---
+
+<section id="mantenimiento" class="py-20 lg:py-32 bg-white relative overflow-hidden">
+  <!-- Decorative elements -->
+  <div class="absolute inset-0 emesoft-pattern opacity-[0.02]"></div>
+  <div class="absolute top-1/4 right-0 w-[400px] h-[400px] emesoft-orb opacity-[0.05]"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12 lg:mb-16" data-animate>
+      <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+        Modalidades de
+        <span class="text-primary"> mantenimiento</span>
+      </h2>
+      <p class="text-lg text-gray-600">
+        Elija el nivel de servicio que mejor se adapte a las necesidades de su empresa.
+      </p>
+    </div>
+
+    <!-- Plans Grid - Mobile Cards -->
+    <div class="lg:hidden space-y-6">
+      {maintenancePlans.map((plan, index) => (
+        <div
+          class={`rounded-2xl p-6 border-2 transition-all duration-300 ${
+            plan.recommended
+              ? 'border-primary bg-primary/5 shadow-lg'
+              : 'border-gray-100 bg-white'
+          }`}
+          data-animate
+          style={`animation-delay: ${index * 75}ms`}
+        >
+          {plan.recommended && (
+            <div class="inline-block px-3 py-1 bg-primary text-white text-xs font-bold rounded-full mb-3">
+              Recomendado
+            </div>
+          )}
+          <h3 class="font-display text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+          <p class="text-gray-600 text-sm mb-6">{plan.description}</p>
+
+          <ul class="space-y-3">
+            {plan.features.filter(f => f.included).map(({ feature }) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm text-gray-700">{feature.name}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href="#contacto"
+            class={`mt-6 block w-full py-3 px-4 text-center font-semibold rounded-lg transition-all duration-200 ${
+              plan.recommended
+                ? 'bg-primary text-white hover:bg-primary-dark'
+                : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+            }`}
+          >
+            Solicitar información
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <!-- Plans Table - Desktop -->
+    <div class="hidden lg:block" data-animate>
+      <div class="overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50">
+              <th class="py-5 px-6 text-left font-display font-semibold text-gray-900 w-1/3">
+                Características
+              </th>
+              {maintenancePlans.map(plan => (
+                <th class={`py-5 px-4 text-center relative ${plan.recommended ? 'bg-primary/10' : ''}`}>
+                  {plan.recommended && (
+                    <div class="absolute -top-px left-0 right-0 h-1 bg-primary rounded-t"></div>
+                  )}
+                  {plan.recommended && (
+                    <span class="inline-block px-2 py-0.5 bg-primary text-white text-xs font-bold rounded-full mb-2">
+                      Recomendado
+                    </span>
+                  )}
+                  <div class="font-display text-xl font-bold text-gray-900">{plan.name}</div>
+                  <div class="text-xs text-gray-500 mt-1">{plan.description}</div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {maintenanceFeatures.map((feature, featureIndex) => (
+              <tr class={featureIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
+                <td class="py-4 px-6">
+                  <div class="font-medium text-gray-900 text-sm">{feature.name}</div>
+                  {feature.description && (
+                    <div class="text-xs text-gray-500 mt-0.5">{feature.description}</div>
+                  )}
+                </td>
+                {maintenancePlans.map(plan => {
+                  const planFeature = plan.features[featureIndex];
+                  return (
+                    <td class={`py-4 px-4 text-center ${plan.recommended ? 'bg-primary/5' : ''}`}>
+                      {planFeature.included ? (
+                        <svg class="w-6 h-6 text-primary mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                      ) : planFeature.note ? (
+                        <span class="text-xs font-medium text-primary">{planFeature.note}</span>
+                      ) : (
+                        <svg class="w-6 h-6 text-gray-300 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr class="bg-gray-50">
+              <td class="py-6 px-6"></td>
+              {maintenancePlans.map(plan => (
+                <td class={`py-6 px-4 text-center ${plan.recommended ? 'bg-primary/10' : ''}`}>
+                  <a
+                    href="#contacto"
+                    class={`inline-block py-3 px-6 font-semibold rounded-lg transition-all duration-200 ${
+                      plan.recommended
+                        ? 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg'
+                        : 'bg-white text-gray-900 border border-gray-200 hover:border-primary hover:text-primary'
+                    }`}
+                  >
+                    Solicitar
+                  </a>
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <p class="text-center text-sm text-gray-500 mt-8" data-animate>
+      Todos los planes incluyen soporte telefónico 24 horas y asistencia presencial preferente.
+    </p>
+  </div>
+</section>
+
+<style>
+  [data-animate] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  [data-animate].animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>

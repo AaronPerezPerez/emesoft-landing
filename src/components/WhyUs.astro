@@ -1,0 +1,110 @@
+---
+import { whyUs } from '../data/whyUs';
+
+// Helper to check if metric is animatable (pure number with optional suffix)
+const isAnimatable = (metric: string) => {
+  const numericPart = metric.replace(/[^0-9]/g, '');
+  const nonNumericPart = metric.replace(/[0-9]/g, '');
+  // Only animate if it starts with numbers and suffix is simple (+, %)
+  return numericPart.length > 0 && /^[+%]*$/.test(nonNumericPart);
+};
+---
+
+<section id="nosotros" class="pt-32 lg:pt-40 pb-24 lg:pb-36 bg-gradient-to-br from-primary/5 via-white to-accent/5 relative overflow-hidden">
+  <!-- Wave transition from Services -->
+  <div class="absolute top-0 left-0 right-0">
+    <svg class="w-full h-16 lg:h-24" viewBox="0 0 1440 96" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0V48C240 80 480 16 720 48C960 80 1200 32 1440 64V0H0Z" fill="white"/>
+    </svg>
+  </div>
+
+  <!-- Decorative background with EMESOFT pattern -->
+  <div class="absolute inset-0 emesoft-pattern opacity-[0.03]"></div>
+  <!-- Decorative orbs -->
+  <div class="absolute -top-32 -right-32 w-96 h-96 emesoft-orb opacity-[0.08]"></div>
+  <div class="absolute -bottom-32 -left-32 w-96 h-96 emesoft-orb opacity-[0.06]"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16" data-animate>
+      <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+        ¿Por qué elegir
+        <span class="text-primary"> EMESOFT</span>?
+      </h2>
+      <p class="text-lg text-gray-600">
+        Diferencias que marcan el éxito de su proyecto.
+      </p>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      {whyUs.map((item, index) => (
+        <article
+          class="group relative bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg hover:border-primary/20 transition-all duration-300"
+          data-animate
+          style={`animation-delay: ${index * 75}ms`}
+        >
+          <!-- Metric value -->
+          <div class="mb-4">
+            {isAnimatable(item.metric) ? (
+              <span
+                class="font-display text-5xl lg:text-6xl font-bold text-primary"
+                data-count={item.metric.replace(/[^0-9]/g, '')}
+                data-suffix={item.metric.replace(/[0-9]/g, '')}
+              >
+                0{item.metric.replace(/[0-9]/g, '')}
+              </span>
+            ) : (
+              <span class="font-display text-5xl lg:text-6xl font-bold text-primary">
+                {item.metric}
+              </span>
+            )}
+          </div>
+
+          <!-- Label -->
+          <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full mb-4">
+            {item.metricLabel}
+          </span>
+
+          <!-- Title -->
+          <h3 class="font-display text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+            {item.title}
+          </h3>
+
+          <!-- Description -->
+          <p class="text-gray-600 text-sm leading-relaxed">
+            {item.description}
+          </p>
+
+          <!-- Decorative corner -->
+          <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/5 to-transparent rounded-tr-2xl rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </article>
+      ))}
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-12" data-animate style="animation-delay: 500ms">
+      <a
+        href="#contacto"
+        class="group inline-flex items-center gap-2 bg-primary text-white font-semibold px-8 py-4 rounded-xl hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 transition-all duration-300"
+      >
+        <span>Solicitar información</span>
+        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-animate] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  [data-animate].animate-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
