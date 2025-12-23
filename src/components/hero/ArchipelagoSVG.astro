@@ -50,7 +50,18 @@ const { class: className = '' } = Astro.props;
           <feMergeNode in="SourceGraphic"/>
         </feMerge>
       </filter>
+      <!-- Filtro blur fuerte para capas de profundidad -->
+      <filter id="depthBlur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="20"/>
+      </filter>
     </defs>
+
+    <!-- Capa -1: Profundidad atmosférica (nodos fantasma grandes y borrosos) -->
+    <g class="depth-layer" opacity="0.12">
+      <circle cx="90" cy="290" r="70" fill="#00B4D8" filter="url(#depthBlur)"/>
+      <circle cx="420" cy="140" r="55" fill="#48CAE4" filter="url(#depthBlur)"/>
+      <circle cx="270" cy="200" r="95" fill="#00B4D8" filter="url(#depthBlur)"/>
+    </g>
 
     <!-- Capa 0: Atmósfera de fondo - partículas estelares -->
     <g class="stars" opacity="0.4">
@@ -69,128 +80,207 @@ const { class: className = '' } = Astro.props;
       <circle cx="450" cy="320" r="0.9" fill="white" class="twinkle" style="--delay: 1.4s"/>
     </g>
 
-    <!-- Capa 1: Conexiones entre islas (orgánicas) -->
-    <g class="connections breathe">
-      <!-- El Hierro - La Gomera -->
-      <path d="M62 300 Q90 280 125 260" stroke="url(#connectionGrad)" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/>
-      <!-- La Palma - Tenerife -->
-      <path d="M88 140 Q130 160 185 195" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <!-- Tenerife - La Gomera -->
-      <path d="M190 220 Q165 240 140 255" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <!-- Tenerife - Gran Canaria -->
-      <path d="M225 205 Q270 215 305 225" stroke="url(#connectionGrad)" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <!-- Gran Canaria - Fuerteventura -->
-      <path d="M345 220 Q370 195 390 175" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <!-- Fuerteventura - Lanzarote -->
-      <path d="M405 150 Q410 120 408 100" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-      <!-- Lanzarote - La Graciosa -->
-      <path d="M415 75 Q420 60 422 50" stroke="url(#connectionGrad)" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.5"/>
-      <!-- Gran Canaria - Lanzarote (línea larga sutil) -->
-      <path d="M340 210 Q380 140 400 95" stroke="url(#connectionGrad)" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.25"/>
+    <!-- Capa 1: Conexiones entre islas (todas desde Tenerife como hub) -->
+    <g class="connections">
+      <!-- Tenerife → La Palma (noroeste) -->
+      <path id="conn-tenerife-palma" d="M245 185 Q160 165 90 150" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" class="data-flow"/>
+      <!-- Tenerife → La Gomera (suroeste) -->
+      <path id="conn-tenerife-gomera" d="M245 215 Q180 235 125 250" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" class="data-flow"/>
+      <!-- La Gomera → El Hierro (extensión suroeste) -->
+      <path id="conn-gomera-hierro" d="M98 262 Q70 290 48 312" stroke="url(#connectionGrad)" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4" class="data-flow"/>
+      <!-- Tenerife → Gran Canaria (principal - sureste) -->
+      <path id="conn-tenerife-gc" d="M295 215 Q330 240 355 258" stroke="url(#connectionGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" class="data-flow data-flow-main"/>
+      <!-- Gran Canaria → Fuerteventura (este) -->
+      <path id="conn-gc-fuerte" d="M395 255 Q412 220 425 195" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" class="data-flow"/>
+      <!-- Fuerteventura → Lanzarote (noreste) -->
+      <path id="conn-fuerte-lanza" d="M440 170 Q445 135 448 112" stroke="url(#connectionGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" class="data-flow"/>
+      <!-- Lanzarote → La Graciosa (norte) -->
+      <path id="conn-lanza-graciosa" d="M455 88 Q458 75 460 68" stroke="url(#connectionGrad)" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.5" class="data-flow"/>
+      <!-- Tenerife → Fuerteventura (conexión directa sutil) -->
+      <path d="M295 200 Q380 180 420 185" stroke="url(#connectionGrad)" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.25" class="data-flow-slow"/>
     </g>
 
-    <!-- Capa 2: Nodos de las 8 islas (tamaños proporcionales a superficie real) -->
+    <!-- Capa 1.5: Partículas de datos viajando DESDE Tenerife -->
+    <g class="data-particles">
+      <!-- Partícula Tenerife → Gran Canaria (conexión principal, 2 partículas) -->
+      <circle r="2.5" fill="#00B4D8" class="data-particle-glow">
+        <animateMotion dur="2.2s" repeatCount="indefinite">
+          <mpath href="#conn-tenerife-gc"/>
+        </animateMotion>
+      </circle>
+      <circle r="2.5" fill="#00B4D8" class="data-particle-glow">
+        <animateMotion dur="2.2s" repeatCount="indefinite" begin="-1.1s">
+          <mpath href="#conn-tenerife-gc"/>
+        </animateMotion>
+      </circle>
+      <!-- Partícula Tenerife → La Palma -->
+      <circle r="2" fill="#48CAE4" class="data-particle-glow">
+        <animateMotion dur="3s" repeatCount="indefinite">
+          <mpath href="#conn-tenerife-palma"/>
+        </animateMotion>
+      </circle>
+      <!-- Partícula Tenerife → La Gomera -->
+      <circle r="2" fill="#48CAE4" class="data-particle-glow">
+        <animateMotion dur="2.8s" repeatCount="indefinite" begin="-1s">
+          <mpath href="#conn-tenerife-gomera"/>
+        </animateMotion>
+      </circle>
+      <!-- Partícula La Gomera → El Hierro (extensión) -->
+      <circle r="1.5" fill="#90E0EF" class="data-particle-glow">
+        <animateMotion dur="2.5s" repeatCount="indefinite" begin="-0.5s">
+          <mpath href="#conn-gomera-hierro"/>
+        </animateMotion>
+      </circle>
+      <!-- Partícula Gran Canaria → Fuerteventura -->
+      <circle r="1.8" fill="#90E0EF" class="data-particle-glow">
+        <animateMotion dur="2.5s" repeatCount="indefinite" begin="-0.3s">
+          <mpath href="#conn-gc-fuerte"/>
+        </animateMotion>
+      </circle>
+      <!-- Partícula Fuerteventura → Lanzarote -->
+      <circle r="1.5" fill="#00B4D8" class="data-particle-glow">
+        <animateMotion dur="2s" repeatCount="indefinite" begin="-0.8s">
+          <mpath href="#conn-fuerte-lanza"/>
+        </animateMotion>
+      </circle>
+    </g>
+
+    <!-- Capa 2: Nodos de las 8 islas (composición diagonal SW→NE)
+         Timing coreografiado: ripple desde Tenerife (centro) hacia la periferia -->
     <g class="islands">
-      <!-- El Hierro: 269 km² - suroeste, la más occidental -->
-      <g class="island el-hierro">
-        <circle cx="55" cy="310" r="16" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.2s"/>
-        <circle cx="55" cy="310" r="7" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1.5"/>
-        <circle cx="55" cy="310" r="3.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.2s"/>
+      <!-- El Hierro: 269 km² - suroeste extremo (más occidental y sur) -->
+      <g class="island el-hierro" style="--enter-delay: 0.55s">
+        <circle cx="40" cy="320" r="16" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.55s"/>
+        <circle cx="40" cy="320" r="7" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1.5"/>
+        <circle cx="40" cy="320" r="3.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.55s"/>
       </g>
 
-      <!-- La Gomera: 370 km² - suroeste de Tenerife, pequeña y cercana -->
-      <g class="island la-gomera">
-        <circle cx="130" cy="265" r="18" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.8s"/>
-        <circle cx="130" cy="265" r="8" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1.5"/>
-        <circle cx="130" cy="265" r="4" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.8s"/>
+      <!-- La Gomera: 370 km² - suroeste de Tenerife -->
+      <g class="island la-gomera" style="--enter-delay: 0.2s">
+        <circle cx="110" cy="255" r="18" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.2s"/>
+        <circle cx="110" cy="255" r="8" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1.5"/>
+        <circle cx="110" cy="255" r="4" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.2s"/>
       </g>
 
-      <!-- La Palma: 708 km² - noroeste -->
-      <g class="island la-palma">
-        <circle cx="75" cy="130" r="24" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.5s"/>
-        <circle cx="75" cy="130" r="11" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2"/>
-        <circle cx="75" cy="130" r="5.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.5s"/>
+      <!-- La Palma: 708 km² - noroeste (norte de las occidentales) -->
+      <g class="island la-palma" style="--enter-delay: 0.35s">
+        <circle cx="75" cy="145" r="24" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.35s"/>
+        <circle cx="75" cy="145" r="11" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2"/>
+        <circle cx="75" cy="145" r="5.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.35s"/>
       </g>
 
-      <!-- TENERIFE: 2,034 km² - centro, la mayor, sede EMESOFT -->
-      <g class="island tenerife">
-        <circle cx="200" cy="200" r="55" fill="url(#tenerifeGlow)" class="tenerife-aura" filter="url(#softGlow)"/>
-        <circle cx="200" cy="200" r="28" fill="#0a1628" stroke="#00B4D8" stroke-width="1" stroke-opacity="0.3"/>
-        <circle cx="200" cy="200" r="22" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="3"/>
-        <circle cx="200" cy="200" r="12" fill="url(#nodeCore)" class="pulse-node tenerife-core" style="--delay: 0s"/>
-        <!-- Anillo exterior de Tenerife -->
-        <circle cx="200" cy="200" r="35" fill="none" stroke="#00B4D8" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="3 6"/>
+      <!-- TENERIFE: 2,034 km² - HUB CENTRAL (corazón del sistema) -->
+      <g class="island tenerife" style="--enter-delay: 0s">
+        <!-- Aura principal con breathing suave -->
+        <circle cx="270" cy="200" r="60" fill="url(#tenerifeGlow)" class="tenerife-breathing" filter="url(#softGlow)"/>
+        <!-- Anillo de datos exterior (rotación lenta) -->
+        <circle cx="270" cy="200" r="46" fill="none" stroke="#00B4D8" stroke-width="0.8" stroke-opacity="0.2" stroke-dasharray="8 4 2 4" class="data-ring"/>
+        <!-- Capa exterior - late con el heartbeat -->
+        <circle cx="270" cy="200" r="35" fill="#0a1628" stroke="#00B4D8" stroke-width="1.5" stroke-opacity="0.35" class="heartbeat-outer"/>
+        <!-- Capa principal -->
+        <circle cx="270" cy="200" r="28" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="3" class="heartbeat-ring"/>
+        <!-- Núcleo - el corazón que late -->
+        <circle cx="270" cy="200" r="15" fill="url(#nodeCore)" class="heartbeat-core"/>
       </g>
 
-      <!-- Gran Canaria: 1,560 km² - este de Tenerife -->
-      <g class="island gran-canaria">
-        <circle cx="320" cy="230" r="42" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.3s"/>
-        <circle cx="320" cy="230" r="18" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2.5"/>
-        <circle cx="320" cy="230" r="9" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.3s"/>
+      <!-- Gran Canaria: 1,560 km² - sureste de Tenerife -->
+      <g class="island gran-canaria" style="--enter-delay: 0.12s">
+        <circle cx="372" cy="265" r="42" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.12s"/>
+        <circle cx="372" cy="265" r="18" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2.5"/>
+        <circle cx="372" cy="265" r="9" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.12s"/>
       </g>
 
-      <!-- Fuerteventura: 1,660 km² - este, segunda más grande -->
-      <g class="island fuerteventura">
-        <circle cx="400" cy="165" r="36" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 1s"/>
-        <circle cx="400" cy="165" r="16" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2.5"/>
-        <circle cx="400" cy="165" r="8" fill="url(#nodeCore)" class="pulse-node" style="--delay: 1s"/>
+      <!-- Fuerteventura: 1,660 km² - este (centro-este del archipiélago) -->
+      <g class="island fuerteventura" style="--enter-delay: 0.4s">
+        <circle cx="430" cy="185" r="36" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.4s"/>
+        <circle cx="430" cy="185" r="16" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2.5"/>
+        <circle cx="430" cy="185" r="8" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.4s"/>
       </g>
 
-      <!-- Lanzarote: 846 km² - noreste -->
-      <g class="island lanzarote">
-        <circle cx="405" cy="85" r="26" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.6s"/>
-        <circle cx="405" cy="85" r="12" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2"/>
-        <circle cx="405" cy="85" r="6" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.6s"/>
+      <!-- Lanzarote: 846 km² - noreste (al norte de Fuerteventura) -->
+      <g class="island lanzarote" style="--enter-delay: 0.5s">
+        <circle cx="450" cy="100" r="26" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.5s"/>
+        <circle cx="450" cy="100" r="12" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="2"/>
+        <circle cx="450" cy="100" r="6" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.5s"/>
       </g>
 
-      <!-- La Graciosa: 29 km² - encima de Lanzarote, diminuta -->
-      <g class="island la-graciosa">
-        <circle cx="420" cy="48" r="6" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 1.2s"/>
-        <circle cx="420" cy="48" r="3" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1"/>
-        <circle cx="420" cy="48" r="1.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 1.2s"/>
+      <!-- La Graciosa: 29 km² - extremo noreste -->
+      <g class="island la-graciosa" style="--enter-delay: 0.6s">
+        <circle cx="460" cy="60" r="6" fill="url(#nodeGlowGradient)" class="node-glow" style="--delay: 0.6s"/>
+        <circle cx="460" cy="60" r="3" fill="#0a1628" stroke="url(#nodeCore)" stroke-width="1"/>
+        <circle cx="460" cy="60" r="1.5" fill="url(#nodeCore)" class="pulse-node" style="--delay: 0.6s"/>
       </g>
     </g>
 
-    <!-- Capa 3: Satélites orbitando Tenerife (3 productos) -->
+    <!-- Capa 3: Satélites orbitando Tenerife (productos) - con trails -->
     <g class="satellites">
-      <!-- EMESPORT -->
+      <!-- EMESPORT - órbita más cercana (más grande, visible) -->
       <g class="satellite orbit-1">
-        <circle r="5" fill="#00B4D8" opacity="0.8">
-          <animateMotion dur="25s" repeatCount="indefinite">
+        <!-- Trail/estela del satélite -->
+        <circle r="8" fill="#00B4D8" opacity="0.15" class="satellite-trail">
+          <animateMotion dur="18s" repeatCount="indefinite" begin="-0.3s">
+            <mpath href="#orbitPath1"/>
+          </animateMotion>
+        </circle>
+        <circle r="6" fill="#00B4D8" opacity="0.9">
+          <animateMotion dur="18s" repeatCount="indefinite">
             <mpath href="#orbitPath1"/>
           </animateMotion>
         </circle>
       </g>
-      <!-- EMESERVICE -->
+      <!-- EMESERVICE - órbita media -->
       <g class="satellite orbit-2">
-        <circle r="4" fill="#48CAE4" opacity="0.7">
-          <animateMotion dur="30s" repeatCount="indefinite" begin="-10s">
+        <circle r="7" fill="#48CAE4" opacity="0.12" class="satellite-trail">
+          <animateMotion dur="24s" repeatCount="indefinite" begin="-8.3s">
+            <mpath href="#orbitPath2"/>
+          </animateMotion>
+        </circle>
+        <circle r="5.5" fill="#48CAE4" opacity="0.85">
+          <animateMotion dur="24s" repeatCount="indefinite" begin="-8s">
             <mpath href="#orbitPath2"/>
           </animateMotion>
         </circle>
       </g>
-      <!-- EMECLINIC -->
+      <!-- EMEFOOD - órbita exterior -->
       <g class="satellite orbit-3">
-        <circle r="4.5" fill="#90E0EF" opacity="0.6">
-          <animateMotion dur="35s" repeatCount="indefinite" begin="-20s">
+        <circle r="6" fill="#90E0EF" opacity="0.1" class="satellite-trail">
+          <animateMotion dur="30s" repeatCount="indefinite" begin="-16.3s">
+            <mpath href="#orbitPath3"/>
+          </animateMotion>
+        </circle>
+        <circle r="5" fill="#90E0EF" opacity="0.8">
+          <animateMotion dur="30s" repeatCount="indefinite" begin="-16s">
             <mpath href="#orbitPath3"/>
           </animateMotion>
         </circle>
       </g>
-      <!-- Órbitas invisibles centradas en Tenerife (200, 200) -->
-      <path id="orbitPath1" d="M200 160 A40 40 0 1 1 200 240 A40 40 0 1 1 200 160" fill="none"/>
-      <path id="orbitPath2" d="M200 150 A50 50 0 1 1 200 250 A50 50 0 1 1 200 150" fill="none"/>
-      <path id="orbitPath3" d="M200 140 A60 60 0 1 1 200 260 A60 60 0 1 1 200 140" fill="none"/>
+      <!-- Órbitas invisibles centradas en Tenerife (270, 200) -->
+      <path id="orbitPath1" d="M270 158 A42 42 0 1 1 270 242 A42 42 0 1 1 270 158" fill="none"/>
+      <path id="orbitPath2" d="M270 145 A55 55 0 1 1 270 255 A55 55 0 1 1 270 145" fill="none"/>
+      <path id="orbitPath3" d="M270 132 A68 68 0 1 1 270 268 A68 68 0 1 1 270 132" fill="none"/>
     </g>
 
-    <!-- Capa 4: Partículas flotantes adicionales -->
+    <!-- Capa 4: Partículas flotantes (distribuidas por diagonal) -->
     <g class="floating-particles">
-      <circle cx="170" cy="120" r="2" fill="#00B4D8" opacity="0.5" class="float-particle" style="--delay: 0s"/>
-      <circle cx="280" cy="150" r="1.5" fill="#48CAE4" opacity="0.4" class="float-particle" style="--delay: 1s"/>
-      <circle cx="360" cy="250" r="2" fill="#00B4D8" opacity="0.4" class="float-particle" style="--delay: 2s"/>
-      <circle cx="140" cy="220" r="1.8" fill="#90E0EF" opacity="0.5" class="float-particle" style="--delay: 0.5s"/>
-      <circle cx="300" cy="280" r="1.5" fill="#48CAE4" opacity="0.3" class="float-particle" style="--delay: 1.5s"/>
-      <circle cx="450" cy="200" r="2" fill="#00B4D8" opacity="0.4" class="float-particle" style="--delay: 2.5s"/>
+      <!-- Zona SW (cerca de islas occidentales) -->
+      <circle cx="85" cy="240" r="1.8" fill="#90E0EF" opacity="0.4" class="float-particle" style="--delay: 0.5s"/>
+      <circle cx="35" cy="280" r="1.5" fill="#48CAE4" opacity="0.3" class="float-particle" style="--delay: 1.5s"/>
+      <!-- Zona central -->
+      <circle cx="190" cy="145" r="2" fill="#00B4D8" opacity="0.5" class="float-particle" style="--delay: 0s"/>
+      <circle cx="310" cy="170" r="1.5" fill="#48CAE4" opacity="0.4" class="float-particle" style="--delay: 1s"/>
+      <!-- Zona NE (cerca de islas orientales) -->
+      <circle cx="395" cy="100" r="2" fill="#00B4D8" opacity="0.4" class="float-particle" style="--delay: 2s"/>
+      <circle cx="475" cy="95" r="1.5" fill="#90E0EF" opacity="0.35" class="float-particle" style="--delay: 2.5s"/>
+      <circle cx="420" cy="200" r="1.8" fill="#48CAE4" opacity="0.3" class="float-particle" style="--delay: 0.8s"/>
+    </g>
+
+    <!-- Capa 5: Foreground - partículas muy cercanas y nítidas -->
+    <g class="foreground-particles">
+      <circle cx="320" cy="135" r="1" fill="white" opacity="0.85" class="twinkle" style="--delay: 0.3s"/>
+      <circle cx="155" cy="195" r="0.8" fill="white" opacity="0.75" class="twinkle" style="--delay: 1.8s"/>
+      <circle cx="410" cy="185" r="1.2" fill="#90E0EF" opacity="0.8" class="twinkle" style="--delay: 0.9s"/>
+      <circle cx="75" cy="195" r="0.7" fill="white" opacity="0.7" class="twinkle" style="--delay: 2.1s"/>
+      <circle cx="480" cy="55" r="0.9" fill="white" opacity="0.8" class="twinkle" style="--delay: 1.4s"/>
     </g>
   </svg>
 </div>
@@ -213,18 +303,38 @@ const { class: className = '' } = Astro.props;
   }
 
   @keyframes twinkle {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 0.8; }
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0.9; }
   }
 
-  /* Respiración de conexiones */
-  .breathe {
-    animation: breathe 6s ease-in-out infinite;
+  /* === DATA FLOW: Flujo de datos en conexiones === */
+  .data-flow {
+    stroke-dasharray: 4 8;
+    animation: dash-flow 2.5s linear infinite;
   }
 
-  @keyframes breathe {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.6; }
+  .data-flow-main {
+    stroke-dasharray: 6 10;
+    animation: dash-flow 2s linear infinite;
+  }
+
+  .data-flow-slow {
+    stroke-dasharray: 3 12;
+    animation: dash-flow 4s linear infinite;
+  }
+
+  @keyframes dash-flow {
+    to { stroke-dashoffset: -24; }
+  }
+
+  /* Anillo de datos rotando alrededor de Tenerife */
+  .data-ring {
+    transform-origin: 270px 200px;
+    animation: data-ring-rotate 25s linear infinite;
+  }
+
+  @keyframes data-ring-rotate {
+    to { transform: rotate(360deg); }
   }
 
   /* Glow de nodos que pulsa */
@@ -249,24 +359,65 @@ const { class: className = '' } = Astro.props;
     50% { opacity: 1; }
   }
 
-  /* Aura especial de Tenerife */
-  .tenerife-aura {
-    animation: tenerife-aura 5s ease-in-out infinite;
+  /* === HEARTBEAT ORGÁNICO DE TENERIFE === */
+
+  /* Breathing suave del aura (muy sutil, como respiración) */
+  .tenerife-breathing {
+    transform-origin: 270px 200px;
+    animation: breathing 6s ease-in-out infinite;
   }
 
-  @keyframes tenerife-aura {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
+  @keyframes breathing {
+    0%, 100% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.03); }
   }
 
-  /* Pulso más pronunciado para Tenerife */
-  .tenerife-core {
-    animation: tenerife-core-pulse 2.5s ease-in-out infinite;
+  /* Núcleo - heartbeat real (lub-dub pattern) */
+  .heartbeat-core {
+    transform-origin: 270px 200px;
+    animation: heartbeat 1.8s ease-in-out infinite;
   }
 
-  @keyframes tenerife-core-pulse {
-    0%, 100% { opacity: 0.8; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.08); }
+  @keyframes heartbeat {
+    0% { transform: scale(1); opacity: 0.85; }
+    /* Primer latido (lub) */
+    14% { transform: scale(1.12); opacity: 1; }
+    28% { transform: scale(1); opacity: 0.9; }
+    /* Segundo latido (dub) - más suave */
+    35% { transform: scale(1.06); opacity: 0.95; }
+    42% { transform: scale(1); opacity: 0.85; }
+    /* Pausa - descanso */
+    100% { transform: scale(1); opacity: 0.85; }
+  }
+
+  /* Anillo principal - propaga el latido con delay */
+  .heartbeat-ring {
+    transform-origin: 270px 200px;
+    animation: heartbeat-ring 1.8s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat-ring {
+    0% { transform: scale(1); }
+    18% { transform: scale(1.04); }
+    32% { transform: scale(1); }
+    40% { transform: scale(1.02); }
+    48% { transform: scale(1); }
+    100% { transform: scale(1); }
+  }
+
+  /* Capa exterior - eco muy sutil del latido */
+  .heartbeat-outer {
+    transform-origin: 270px 200px;
+    animation: heartbeat-outer 1.8s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat-outer {
+    0% { transform: scale(1); stroke-opacity: 0.35; }
+    22% { transform: scale(1.025); stroke-opacity: 0.45; }
+    36% { transform: scale(1); stroke-opacity: 0.35; }
+    44% { transform: scale(1.015); stroke-opacity: 0.4; }
+    52% { transform: scale(1); stroke-opacity: 0.35; }
+    100% { transform: scale(1); stroke-opacity: 0.35; }
   }
 
   /* Partículas flotantes */
@@ -283,7 +434,35 @@ const { class: className = '' } = Astro.props;
   }
 
   /* Glow sutil en satélites */
-  .satellite circle {
-    filter: drop-shadow(0 0 3px rgba(0, 180, 216, 0.6));
+  .satellite circle:not(.satellite-trail) {
+    filter: drop-shadow(0 0 4px rgba(0, 180, 216, 0.7));
+  }
+
+  /* Trail blur para satélites */
+  .satellite-trail {
+    filter: blur(3px);
+  }
+
+  /* === FASE 2: Profundidad y partículas === */
+
+  /* Capa de profundidad con pulso muy lento */
+  .depth-layer {
+    animation: depth-breathe 10s ease-in-out infinite;
+  }
+
+  @keyframes depth-breathe {
+    0%, 100% { opacity: 0.08; }
+    50% { opacity: 0.15; }
+  }
+
+  /* Partículas de datos con glow */
+  .data-particle-glow {
+    filter: drop-shadow(0 0 4px rgba(0, 180, 216, 0.8));
+    opacity: 0.9;
+  }
+
+  /* Capa de foreground nítida */
+  .foreground-particles circle {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
   }
 </style>
