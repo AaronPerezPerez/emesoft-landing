@@ -92,7 +92,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const msg = createMimeMessage();
     msg.setSender({ name: 'EMESOFT Web', addr: 'contacto@perezperez.dev' });
     msg.setRecipient('administracion@emesoft.com');
-    msg.setHeader('Reply-To', `${name} <${email}>`);
+    msg.setHeader('Reply-To', email); // Solo el email, sin nombre
     msg.setSubject(`Nuevo contacto web - ${name}`);
     msg.addMessage({
       contentType: 'text/html',
