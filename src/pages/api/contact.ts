@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
+import { EmailMessage } from 'cloudflare:email';
+import { createMimeMessage } from 'mimetext';
 
 // No pre-renderizar - ejecutar en el servidor
 export const prerender = false;
@@ -17,7 +19,7 @@ const contactSchema = z.object({
 
 type ContactData = z.infer<typeof contactSchema>;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const headers = { 'Content-Type': 'application/json' };
 
   try {
@@ -46,8 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const { name, email, phone, company, product, message } = result.data;
 
-    // 4. Enviar email via MailChannels API
-    // En desarrollo local, solo loguear (MailChannels requiere CF Workers)
+    // 4. En desarrollo local, solo loguear
     const isDev = import.meta.env.DEV;
 
     if (isDev) {
@@ -64,43 +65,30 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Producción: enviar via MailChannels
-    const mailResponse = await fetch(
-      'https://api.mailchannels.net/tx/v1/send',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          personalizations: [
-            {
-              to: [{ email: 'administracion@emesoft.com', name: 'EMESOFT Administración' }],
-            },
-          ],
-          from: { email: 'contacto@perezperez.dev', name: 'EMESOFT Web' },
-          reply_to: { email, name },
-          subject: `Nuevo contacto web - ${name}`,
-          content: [
-            {
-              type: 'text/html',
-              value: generateEmailHTML({
-                name,
-                email,
-                phone,
-                company,
-                product,
-                message,
-              }),
-            },
-          ],
-        }),
-      }
+    // 5. Producción: enviar via Cloudflare Email Workers
+    const runtime = (locals as any).runtime;
+    if (!runtime?.env?.EMAIL) {
+      console.error('EMAIL binding not available');
+      throw new Error('Email service not configured');
+    }
+
+    const msg = createMimeMessage();
+    msg.setSender({ name: 'EMESOFT Web', addr: 'contacto@perezperez.dev' });
+    msg.setRecipient('administracion@emesoft.com');
+    msg.setHeader('Reply-To', `${name} <${email}>`);
+    msg.setSubject(`Nuevo contacto web - ${name}`);
+    msg.addMessage({
+      contentType: 'text/html',
+      data: generateEmailHTML({ name, email, phone, company, product, message }),
+    });
+
+    const emailMessage = new EmailMessage(
+      'contacto@perezperez.dev',
+      'administracion@emesoft.com',
+      msg.asRaw()
     );
 
-    if (!mailResponse.ok) {
-      const errorText = await mailResponse.text();
-      console.error('MailChannels error:', errorText);
-      throw new Error('Error enviando email');
-    }
+    await runtime.env.EMAIL.send(emailMessage);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
