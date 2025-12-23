@@ -74,6 +74,17 @@ const productOptions = [
             class="mb-6"
           />
 
+          <!-- Honeypot anti-spam (hidden from users, visible to bots) -->
+          <div class="hidden" aria-hidden="true">
+            <input
+              type="text"
+              name="honeypot"
+              id="honeypot"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+
           <!-- Submit -->
           <button
             type="submit"
@@ -270,13 +281,37 @@ const productOptions = [
 
     setLoading(true);
 
-    // Simulate form submission (replace with actual API call)
+    // Collect form data
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone') || undefined,
+      company: formData.get('company') || undefined,
+      product: formData.get('product') || undefined,
+      message: formData.get('message'),
+      honeypot: formData.get('honeypot') || undefined,
+    };
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSuccess();
-      form.reset();
-      setTimeout(resetForm, 3000);
-    } catch {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSuccess();
+        form.reset();
+        setTimeout(resetForm, 3000);
+      } else {
+        console.error('API error:', result.error || result.details);
+        setError();
+      }
+    } catch (err) {
+      console.error('Network error:', err);
       setError();
     }
   });
