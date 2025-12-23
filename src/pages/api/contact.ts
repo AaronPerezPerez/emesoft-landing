@@ -69,15 +69,26 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const runtime = (locals as any).runtime;
 
     // Debug: log available bindings
-    console.log('Runtime available:', !!runtime);
-    console.log('Runtime env:', runtime?.env ? Object.keys(runtime.env) : 'no env');
+    console.log('[EMAIL] Runtime check:', {
+      hasRuntime: !!runtime,
+      hasEnv: !!runtime?.env,
+      envKeys: runtime?.env ? Object.keys(runtime.env) : [],
+      hasEMAIL: !!runtime?.env?.EMAIL,
+    });
 
     if (!runtime?.env?.EMAIL) {
-      console.error('EMAIL binding not available. Available bindings:',
-        runtime?.env ? Object.keys(runtime.env) : 'none');
-      throw new Error('Email service not configured');
+      const availableBindings = runtime?.env ? Object.keys(runtime.env) : [];
+      console.error('[EMAIL] EMAIL binding not available. Available:', availableBindings);
+      return new Response(
+        JSON.stringify({
+          error: 'Servicio de email no configurado',
+          debug: { availableBindings },
+        }),
+        { status: 503, headers }
+      );
     }
 
+    // Crear mensaje MIME
     const msg = createMimeMessage();
     msg.setSender({ name: 'EMESOFT Web', addr: 'contacto@perezperez.dev' });
     msg.setRecipient('administracion@emesoft.com');
@@ -88,23 +99,30 @@ export const POST: APIRoute = async ({ request, locals }) => {
       data: generateEmailHTML({ name, email, phone, company, product, message }),
     });
 
+    console.log('[EMAIL] Creating EmailMessage...');
     const emailMessage = new EmailMessage(
       'contacto@perezperez.dev',
       'administracion@emesoft.com',
       msg.asRaw()
     );
 
+    console.log('[EMAIL] Sending via binding...');
     await runtime.env.EMAIL.send(emailMessage);
+    console.log('[EMAIL] Sent successfully!');
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers,
     });
   } catch (error) {
-    console.error('Error en /api/contact:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('[EMAIL] Error en /api/contact:', errorMessage);
+    console.error('[EMAIL] Stack:', error instanceof Error ? error.stack : 'no stack');
+
     return new Response(
       JSON.stringify({
         error: 'Error al enviar el mensaje. Inténtalo de nuevo.',
+        debug: { message: errorMessage },
       }),
       { status: 500, headers }
     );
